@@ -1,15 +1,25 @@
 # Scrape & structure financial accounting data from the SEC
+Aaron Slowey, PhD, MBA
+1st dot last at make_a_wild_guess
 
-### (incomplete work in progress)
+### N.B. this is a work in progress
+This code produces a tidy (long-form) table of financial accounting data of 
+one or more firms, filed in one or more reports.
 
-Starting circa 2009, the U.S. Securities & Exchange Commision required publicly 
-traded firms to provide financial results in a standardized, machine-readable, format. Using
- open-source Python libraries, it is possible to automatically extract 
- financial accounting data from such filings and feed them into customized analytical models & reports.
+Starting circa 2009, the U.S. Securities & Exchange Commission required 
+publicly traded firms to report financial results in a standardized, 
+machine-readable, format. Using open-source Python libraries, it is possible to automatically extract 
+ financial accounting data from such reports such that they can be fed 
+ them into customized analytical models & reports.
  
 This document explains how the code in this repo works, with particular 
 attention to structural design choices that should help you adapt the code to
- your specific needs.
+ your specific needs. The code itself is contained in two modules, of which 
+ `main.py` can be adapted into a Jupyter notebook, if you prefer, importing 
+ the module `parse_web`.
+ 
+The code initiates with a call to the function `metrics`, which calls a 
+succession of functions, as outlined below.
  
 ## 1. Create a URL that conforms to the SEC's expectation
 ### Function: `sec_search_html`
@@ -66,8 +76,15 @@ metric. If `contextref` always started with `FROM_` followed by a date,
  the dates. But since we want this tool to be able to retrieve more than one 
  metric at a time, it needs to automatically handle variations in `contextref`
  and other attributes, not just those that start with `FROM_`.  Regular 
- expressions provide the needed level of flexibility, as illustrated in the 
- code.
+ expressions provide the needed level of flexibility.
+ 
+While regular expressions could be applied within the `str.split` operation of 
+`pandas`, using `expand=True` to generate individual columns of the patterns 
+and adjacencies I found the results to be unwieldy. Instead, I 
+created a regex for each `context` I wanted to extract, applying `regex
+.findall()` as a `lambda` function to the DataFrame's `contextref` column. It
+ is likely you will have to modify and/or add regular expressions to grab 
+ everything you need.
 
 * `unitref`: the monetary currency in which the metric was reported
 
@@ -85,3 +102,5 @@ accordingly; i.e., 17765000000 becomes 17,765 million
 [Parsing XBRL with Python](https://www.codeproject.com/Articles/1227765/Parsing-XBRL-with-Python)
 
 [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+
+Mitchell, Ryan, Web scraping with Python, O'Reilly, 2018

@@ -1,8 +1,6 @@
 # Scrape & structure financial accounting data from the SEC
-Aaron Slowey, PhD, MBA
-1st dot last at make_a_wild_guess
 
-### N.B. this is a work in progress
+#### N.B. this is a work in progress
 This code produces a tidy (long-form) table of financial accounting data of 
 one or more firms, filed in one or more reports.
 
@@ -12,30 +10,32 @@ machine-readable, format. Using open-source Python libraries, it is possible to 
  financial accounting data from such reports such that they can be fed 
  them into customized analytical models & reports.
  
-This document explains how the code in this repo works, with particular 
-attention to structural design choices that should help you adapt the code to
- your specific needs. The code itself is contained in two modules, of which 
+Please see in-line documentation & references appended to understand how the 
+code works and where design choices were made such that you can adapt the 
+code to your specific needs. The code itself is contained in two modules, of which 
  `main.py` can be adapted into a Jupyter notebook, if you prefer, importing 
- the module `parse_web`.
+ the module `parse_sec`.
  
-The code initiates with a call to the function `metrics`, which calls a 
-succession of functions, as outlined below.
+The code initiates with a call to the function `metrics`, which 
+successively calls the functions summarized below.
  
-## 1. Create a URL that conforms to the SEC's expectation
-### Function: `sec_search_html`
+### 1. Create a URL that conforms to the SEC's expectation
+#### Function: `sec_search_html`
 
 Confined to a company, report type (10-K or 10-Q or 5-, etc.), latest date, 
 and report quantity
 
-## 2. Navigate that URL & extract links to each filing
-### Function(s): `get_doc_link`
+### 2. Navigate that URL & extract links to each filing
+#### Function(s): `get_doc_link`
 
-## 3. Navigate to the page of an individual filing & get the link to the XBRL-formatted report
-### Function(s): `get_tags`
+### 3. Navigate to the page of an individual filing & get the link to the 
+XBRL-formatted report
+#### Function(s): `get_tags`
 
 
-## 4. Scrape the [XBRL](https://xbrl.us/) report for financial metrics and tabulate
-### Function(s): `metrics`
+### 4. Scrape the [XBRL](https://xbrl.us/) report for financial metrics and 
+tabulate
+#### Function(s): `metrics`
 
 The raw data are contained in an XML document, with copious amounts of HTML 
 tags, formatting, and other code we do not need.  Using Python & a decent code 
@@ -96,7 +96,7 @@ accordingly; i.e., 17765000000 becomes 17,765 million
 
 
 
-## References
+### References
 [Accessing financial reports in the EDGAR database](https://www.codeproject.com/Articles/1227268/Accessing-Financial-Reports-in-the-EDGAR-Database)
 
 [Parsing XBRL with Python](https://www.codeproject.com/Articles/1227765/Parsing-XBRL-with-Python)

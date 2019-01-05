@@ -49,14 +49,45 @@ financials = ['AssetsCurrent', 'DirectOperatingCosts', 'EarningsPerShareBasic',
 
 financials_short = ['AssetsCurrent', 'NetIncomeLoss']
 
-# cash flow operations, investment, and financing
-
 ancillaries = ['entityregistrantname', 'entitycentralindexkey',
                'documentfiscalperiodfocus', 'documentperiodenddate',
                'documenttype', 'exchangesymbol', 'amendmentFlag']
 
-# path = None
-# fname = None
 
 # In development; metrics to calculate
 efs = ['price_to_book']
+
+# cash flow operations, investment, and financing
+
+# Profitability
+# ROA (NI / average total assets)
+# ROE (NI / average SE); typically 5% to 18%, with goal at least 12%
+# Net investment yield (net investment income / average invested assets) (4
+# to 12%)
+
+# Ceded premium ratio = ceded premium / gross premium written
+# Retention ratio = 1 - CPR
+# Net premiums written = Gross premiums(retention ratio)
+
+
+# Pricing influenced by interest rates, while demand for insurance could be
+# normalized by GDP
+
+
+# Underwriting performance
+
+# Degree of leverage and/or pricing power
+# Net premiums written to surplus -- how well has an insurer leveraged its
+# capital to write business (capacity utilization)
+# Net written premiums / policyholder's surplus, where PS = SE for public
+# companies (term exists for mutuals); regulators permit 2-to-1; typically
+# 0.2 to 0.7 due to inability to charge higher premiums
+
+# Combined ratio = loss ratio + expense ratio + dividend ratio
+# Loss ratio = (losses + LAE) / earned premiums (60% to 80%)
+# Expense ratio = acquisition & operating expenses / written premiums (25% to 35%)
+# Dividend ratio = Policyholder dividends / earned premiums (1.0% to 2.0%)
+#
+
+# Liquidity: ability to convert assets into cash to pay claims & other expenses
+

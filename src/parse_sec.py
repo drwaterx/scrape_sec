@@ -247,53 +247,55 @@ class ScrapeSEC:
 
     def metrics(self, financials):
 
+        # Iterates over firms for one date
         for cik in self.ciks:
             soup_xbrl = ScrapeSEC.get_tags(self, cik)
 
+            # Create empty list; each item will be one firm's metrics
             dfs = []
 
-            # Assemble data set for one firms, financial metrics, and times
+            # Iterates over metrics for one firm & date
             for met in [x.lower() for x in financials]:
 
-                idx = 0
+                idx = 0  # row indexer
 
-                # Define regular expression of any tag starting with...
+                # Define regular expression: Any tag starting with...
                 pat = regex.compile('^us-gaap:' + met)
 
                 try:
                     # Create an empty DataFrame with a column for each attribute
+                    # .attrs is a Beautiful Soup method to obtain a dict of
+                    # the content tagged per regex pattern
                     df = pd.DataFrame(columns=list(soup_xbrl.find(pat).attrs.
                                                    keys()) +
                                               ['metric_name', 'metric_value'])
 
-                    # Extract all instances of one metric
+                    # Extract all instances of one metric & the contextual
+                    # info needed to distinguish them
                     for tag in soup_xbrl.find_all(pat):
 
-                        # Retrieve context of metric (tag attributes); note that
+                        # Retrieve context of metric (tag attributes)
                         # .attrs is a dictionary
                         # 'contextref' contains values that need to be parsed
                         # 'unittref' usually USD
-                        # 'decimals' usually -6; i.e., millions
-                        # Place list of attribute values in 1st row of the DataFrame
+                        # 'decimals' e.g., -6, or rounded to nearest million
+                        # Place list of attribute values in row idx of the
+                        # DataFrame
                         df.loc[idx] = list(tag.attrs.values()) + [np.nan, np.nan]
 
-                        # If 'decimals' is positive, implies a pre-normalized metric
-                        # like EPS that shouldn't be scaled; if 'decimals' is
-                        # negative, suggests value has been rounded, so scale
+                        # If decimals is positive, metric is pre-normalized
+                        # (e.g., EPS), so don't scale; but if 'decimals' is
+                        # negative, value has been rounded, so scale
                         # accordingly
                         if float(df[idx:idx+1].decimals) < 0:
                             scale = abs(float(df[idx:idx+1].decimals))
                         else:
-                            scale = 1
+                            scale = 1.
 
-                        # Add scaled metric & name (long-form)
+                        # Add scaled name & value
                         df.loc[idx, 'metric_name'] = tag.name
-                        df.loc[idx, 'metric_value'] = float(tag.text)/scale
+                        df.loc[idx, 'metric_value'] = float(tag.text) / scale
 
-                        # Add scaled metric & name (wide-form); unlikely to work
-                        # as instances of the current metric will necessarily
-                        # differ in context
-                        # df.loc[0, tag.name] = float(tag.text)/scale
                         idx += 1
 
                     # Append DataFrame to a list
@@ -310,25 +312,31 @@ class ScrapeSEC:
             # df = pd.DataFrame(sorted(itertools.chain(*groups)), columns=[
             #     'metric_name', 'context', 'metric_value', 'units'])
 
-            # ---SANDBOX--------------------------------------------------------
-            # pat_ctxt = '(AS_OF_)|(FROM_)|(_TO_)|(_Entity_)'
-            # pat_ctxt = '([A-Z]{1}[a-z]{2}\d{2}_\d{4})|(_Entity_\d*)|(' \
-            #            '_dei_LegalEntityAxis_)'
-            # pat_test.findall(asof)
-            # pat_test.findall(fromto)
-            # asof = dfm.iloc[0, 1]
-            # fromto = dfm.iloc[11, 1]
+            # -----REGEX SANDBOX------------------------------------------------
+            # pat_ctxt = regex.compile('(AS_OF_)|(FROM_)|(_TO_)|(_Entity_)')
+            # pat_ctxt = regex.compile('([A-Z]{1}[a-z]{2}\d{2}_\d{4})|('
+            #                          'Entity_\d*)|(dei_LegalEntityAxis_)')
+            # pat_test.findall(pat_ctxt)
+            #
             # ------------------------------------------------------------------
 
             # Define a pattern to find MmmDD_YYYY dates
             pat_date = regex.compile('([A-Z]{1}[a-z]{2}\d{2}_\d{4})')
 
             # Extract the dates from contextref & place into two columns; a
-            # null or None value will be placed in the 2nd column as appropriate
-            dfm.loc[:, 'timestamps'] = dfm.contextref.apply(lambda x:
-                pat_date.findall(x))
-            dfm[['t0', 't1']] = pd.DataFrame(dfm.timestamps.values.tolist(),
-                                             index=dfm.index)
+            # NaN or None will be placed in the 2nd column as appropriate
+            # The DataFrame constructor and .values.tolist() handles the list
+            # provided by regex's findall()
+            dfm[['t0', 't1']] = pd.DataFrame(
+                dfm.contextref.apply(lambda x: pat_date.findall(x)).
+                                     values.tolist(), index=dfm.index)
+
+            # 1. Place a list of timestamps in one column
+            # dfm.loc[:, 'timestamps'] = dfm.contextref.apply(lambda x:
+            #                                                 pat_date.findall(x))
+            # 2. To separate the list, extract & replace
+            # dfm[['t0', 't1']] = pd.DataFrame(dfm.timestamps.values.tolist(),
+            #                                  index=dfm.index)
 
             # Print list of tags' contexts
             for c in dfm.contextref:

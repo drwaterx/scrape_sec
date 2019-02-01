@@ -37,7 +37,7 @@ Beneficial ownership 	13-D	Identifies prominent owner (>5%) of company'''
 # of the source; equivalent to setting `owner` to 'include'.
 # If only, EDGAR will only provide reports related to director or officer ownership
 
-args = {'type': '10-Q', 'dateb': '20190101', 'count': 100, 'owner': 'only'}
+args_xbrl = {'type': '10-Q', 'dateb': '20190101', 'count': 100, 'owner': 'only'}
 # possibilities for 'owner' are include (default), exclude, or only
 
 # 6. List the financial accounting metrics to retrieve

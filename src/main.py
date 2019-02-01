@@ -15,7 +15,5 @@ def main(cik_map, args, path=Path.home(), fname='sec_report_temp.xlsx'):
 
     df.to_excel(path / fname)
 
-if  __name__ =='__main__':
-    main()
-
-
+if  __name__ == '__main__':
+    main(cik_map, args_xbrl)

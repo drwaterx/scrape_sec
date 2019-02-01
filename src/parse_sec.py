@@ -46,6 +46,12 @@ single document may need to access features from many different schemas
 
 from pathlib import Path
 import regex
+
+try:
+    import requests
+except ImportError:
+    print('Using urllib instead of requests')
+
 import requests  # substitute for urllib
 from bs4 import BeautifulSoup
 from urllib.error import HTTPError, URLError
